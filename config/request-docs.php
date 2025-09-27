@@ -18,7 +18,7 @@ return [
     ],
 
     //Use only routes where ->uri start with next string Using Str::startWith( . e.g. - /api/mobile
-    'only_route_uri_start_with' => 'api',
+    'only_route_uri_start_with' => ['api', 'admin', 'tenant'],
 
     'hide_matching' => [
         '#^telescope#',
