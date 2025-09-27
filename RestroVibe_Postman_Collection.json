@@ -1,0 +1,3570 @@
+{
+	"info": {
+		"_postman_id": "restrovibe-api-collection",
+		"name": "RestroVibe API Collection",
+		"description": "Complete API collection for RestroVibe Restaurant Management System SaaS",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"auth": {
+		"type": "noauth"
+	},
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8000/api",
+			"type": "string"
+		},
+		{
+			"key": "access_token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "refresh_token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "admin_token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "tenant_token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "api_token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "tenant_id",
+			"value": "1",
+			"type": "string"
+		},
+		{
+			"key": "restaurant_id",
+			"value": "1",
+			"type": "string"
+		},
+		{
+			"key": "user_id",
+			"value": "1",
+			"type": "string"
+		},
+		{
+			"key": "category_id",
+			"value": "1",
+			"type": "string"
+		},
+		{
+			"key": "item_id",
+			"value": "1",
+			"type": "string"
+		},
+		{
+			"key": "order_id",
+			"value": "1",
+			"type": "string"
+		}
+	],
+	"item": [
+		{
+			"name": "Admin Authentication",
+			"auth": {
+				"type": "bearer",
+				"bearer": [
+					{
+						"key": "token",
+						"value": "{{admin_token}}",
+						"type": "string"
+					}
+				]
+			},
+			"item": [
+				{
+					"name": "Admin Login",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"{{admin_email}}\",\n    \"password\": \"{{admin_password}}\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/admin/auth/login",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"admin",
+								"auth",
+								"login"
+							]
+						},
+						"description": "Login as super admin"
+					},
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"// Set admin_token from login response",
+									"console.log('Response status:', pm.response.code);",
+									"console.log('Response body:', pm.response.text());",
+									"",
+									"if (pm.response.code === 200) {",
+									"    try {",
+									"        const response = pm.response.json();",
+									"        console.log('Parsed response:', response);",
+									"        ",
+									"        if (response.data && response.data.access_token) {",
+									"            pm.environment.set('admin_token', response.data.access_token);",
+									"            pm.environment.set('access_token', response.data.access_token);",
+									"            console.log('Admin token set successfully:', response.data.access_token);",
+									"            ",
+									"            // Test the token",
+									"            pm.test('Admin token is set', function () {",
+									"                pm.expect(pm.environment.get('admin_token')).to.not.be.empty;",
+									"            });",
+									"        } else {",
+									"            console.log('No access_token found in response');",
+									"        }",
+									"    } catch (e) {",
+									"        console.log('Error parsing response:', e);",
+									"    }",
+									"} else {",
+									"    console.log('Login failed with status:', pm.response.code);",
+									"    console.log('Error response:', pm.response.text());",
+									"}"
+								]
+							}
+						}
+					],
+					"response": []
+				},
+				{
+					"name": "Admin Logout",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/admin/auth/logout",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"admin",
+								"auth",
+								"logout"
+							]
+						},
+						"description": "Logout admin user"
+					},
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"// Clear admin tokens on logout",
+									"if (pm.response.code === 200) {",
+									"    pm.environment.set('admin_token', '');",
+									"    pm.environment.set('access_token', '');",
+									"    console.log('Admin tokens cleared successfully');",
+									"    ",
+									"    pm.test('Admin tokens are cleared', function () {",
+									"        pm.expect(pm.environment.get('admin_token')).to.be.empty;",
+									"    });",
+									"} else {",
+									"    console.log('Logout failed with status:', pm.response.code);",
+									"}"
+								]
+							}
+						}
+					],
+					"response": []
+				},
+				{
+					"name": "Get Admin Profile",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/admin/auth/me",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"admin",
+								"auth",
+								"me"
+							]
+						},
+						"description": "Get current admin user profile"
+					},
+					"response": []
+				},
+				{
+					"name": "Refresh Admin Token",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/admin/auth/refresh",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"admin",
+								"auth",
+								"refresh"
+							]
+						},
+						"description": "Refresh admin authentication token"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Admin Dashboard",
+			"item": [
+				{
+					"name": "Get Dashboard Overview",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/admin/dashboard?period=30",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"admin",
+								"dashboard"
+							],
+							"query": [
+								{
+									"key": "period",
+									"value": "30"
+								}
+							]
+						},
+						"description": "Get admin dashboard overview with statistics"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Tenant Statistics",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/admin/dashboard/tenant-stats",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"admin",
+								"dashboard",
+								"tenant-stats"
+							]
+						},
+						"description": "Get tenant statistics for admin dashboard"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Revenue Analytics",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/admin/dashboard/revenue?period=30",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"admin",
+								"dashboard",
+								"revenue"
+							],
+							"query": [
+								{
+									"key": "period",
+									"value": "30"
+								}
+							]
+						},
+						"description": "Get revenue analytics for admin dashboard"
+					},
+					"response": []
+				},
+				{
+					"name": "Get System Health",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/admin/dashboard/system-health",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"admin",
+								"dashboard",
+								"system-health"
+							]
+						},
+						"description": "Get system health metrics"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Admin Tenant Management",
+			"auth": {
+				"type": "bearer",
+				"bearer": [
+					{
+						"key": "token",
+						"value": "{{admin_token}}",
+						"type": "string"
+					}
+				]
+			},
+			"item": [
+				{
+					"name": "Get All Tenants",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/admin/tenants?per_page=15&status=active",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"admin",
+								"tenants"
+							],
+							"query": [
+								{
+									"key": "per_page",
+									"value": "15"
+								},
+								{
+									"key": "status",
+									"value": "active"
+								}
+							]
+						},
+						"description": "Get all tenants with pagination and filters"
+					},
+					"response": []
+				},
+				{
+					"name": "Create New Tenant",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"New Restaurant Group\",\n    \"domain\": \"newgroup.restrovibe.com\",\n    \"status\": \"active\",\n    \"subscription_plan\": \"professional\",\n    \"subscription_status\": \"active\",\n    \"subscription_expires_at\": \"2025-12-31T23:59:59Z\",\n    \"primary_color\": \"#3B82F6\",\n    \"secondary_color\": \"#1E40AF\",\n    \"owner\": {\n        \"name\": \"John Restaurant Owner\",\n        \"email\": \"owner@newgroup.com\",\n        \"password\": \"password123\"\n    }\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/admin/tenants",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"admin",
+								"tenants"
+							]
+						},
+						"description": "Create a new tenant with owner user"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Tenant Details",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/admin/tenants/{{tenant_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"admin",
+								"tenants",
+								"{{tenant_id}}"
+							]
+						},
+						"description": "Get specific tenant details"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Tenant",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Updated Restaurant Group\",\n    \"subscription_plan\": \"enterprise\",\n    \"primary_color\": \"#10B981\",\n    \"secondary_color\": \"#059669\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/admin/tenants/{{tenant_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"admin",
+								"tenants",
+								"{{tenant_id}}"
+							]
+						},
+						"description": "Update tenant information"
+					},
+					"response": []
+				},
+				{
+					"name": "Suspend Tenant",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/admin/tenants/{{tenant_id}}/suspend",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"admin",
+								"tenants",
+								"{{tenant_id}}",
+								"suspend"
+							]
+						},
+						"description": "Suspend a tenant"
+					},
+					"response": []
+				},
+				{
+					"name": "Activate Tenant",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/admin/tenants/{{tenant_id}}/activate",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"admin",
+								"tenants",
+								"{{tenant_id}}",
+								"activate"
+							]
+						},
+						"description": "Activate a suspended tenant"
+					},
+					"response": []
+				},
+				{
+					"name": "Switch to Tenant",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/admin/tenants/{{tenant_id}}/switch",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"admin",
+								"tenants",
+								"{{tenant_id}}",
+								"switch"
+							]
+						},
+						"description": "Switch admin context to specific tenant"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Tenant Analytics",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/admin/tenants/{{tenant_id}}/analytics",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"admin",
+								"tenants",
+								"{{tenant_id}}",
+								"analytics"
+							]
+						},
+						"description": "Get analytics for specific tenant"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Tenant Authentication",
+			"auth": {
+				"type": "bearer",
+				"bearer": [
+					{
+						"key": "token",
+						"value": "{{tenant_token}}",
+						"type": "string"
+					}
+				]
+			},
+			"item": [
+				{
+					"name": "Tenant Login",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"{{tenant_owner_email}}\",\n    \"password\": \"{{tenant_owner_password}}\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/tenant/auth/login",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"tenant",
+								"auth",
+								"login"
+							]
+						},
+						"description": "Login as tenant user (restaurant owner/manager/staff)"
+					},
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"// Set tenant_token from login response",
+									"console.log('Response status:', pm.response.code);",
+									"console.log('Response body:', pm.response.text());",
+									"",
+									"if (pm.response.code === 200) {",
+									"    try {",
+									"        const response = pm.response.json();",
+									"        console.log('Parsed response:', response);",
+									"        ",
+									"        if (response.data && response.data.access_token) {",
+									"            pm.environment.set('tenant_token', response.data.access_token);",
+									"            pm.environment.set('access_token', response.data.access_token);",
+									"            console.log('Tenant token set successfully:', response.data.access_token);",
+									"            ",
+									"            // Test the token",
+									"            pm.test('Tenant token is set', function () {",
+									"                pm.expect(pm.environment.get('tenant_token')).to.not.be.empty;",
+									"            });",
+									"        } else {",
+									"            console.log('No access_token found in response');",
+									"        }",
+									"    } catch (e) {",
+									"        console.log('Error parsing response:', e);",
+									"    }",
+									"} else {",
+									"    console.log('Login failed with status:', pm.response.code);",
+									"    console.log('Error response:', pm.response.text());",
+									"}"
+								]
+							}
+						}
+					],
+					"response": []
+				},
+				{
+					"name": "Tenant Logout",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/tenant/auth/logout",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"tenant",
+								"auth",
+								"logout"
+							]
+						},
+						"description": "Logout tenant user"
+					},
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"// Clear tenant tokens on logout",
+									"if (pm.response.code === 200) {",
+									"    pm.environment.set('tenant_token', '');",
+									"    pm.environment.set('access_token', '');",
+									"    console.log('Tenant tokens cleared successfully');",
+									"    ",
+									"    pm.test('Tenant tokens are cleared', function () {",
+									"        pm.expect(pm.environment.get('tenant_token')).to.be.empty;",
+									"    });",
+									"} else {",
+									"    console.log('Logout failed with status:', pm.response.code);",
+									"}"
+								]
+							}
+						}
+					],
+					"response": []
+				},
+				{
+					"name": "Get Tenant Profile",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/tenant/auth/me",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"tenant",
+								"auth",
+								"me"
+							]
+						},
+						"description": "Get current tenant user profile"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Tenant Dashboard",
+			"item": [
+				{
+					"name": "Get Tenant Dashboard",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/tenant/dashboard",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"tenant",
+								"dashboard"
+							]
+						},
+						"description": "Get tenant dashboard with statistics"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Tenant Restaurant Management",
+			"auth": {
+				"type": "bearer",
+				"bearer": [
+					{
+						"key": "token",
+						"value": "{{tenant_token}}",
+						"type": "string"
+					}
+				]
+			},
+			"item": [
+				{
+					"name": "Get Restaurants",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/tenant/restaurants?per_page=15&status=active",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"tenant",
+								"restaurants"
+							],
+							"query": [
+								{
+									"key": "per_page",
+									"value": "15"
+								},
+								{
+									"key": "status",
+									"value": "active"
+								}
+							]
+						},
+						"description": "Get all restaurants for current tenant"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Restaurant",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"New Pizza Place\",\n    \"description\": \"Authentic Italian pizza and pasta\",\n    \"address\": \"456 Oak Street\",\n    \"city\": \"Los Angeles\",\n    \"state\": \"CA\",\n    \"zip_code\": \"90210\",\n    \"country\": \"US\",\n    \"phone\": \"+1-555-987-6543\",\n    \"email\": \"info@newpizzaplace.com\",\n    \"website\": \"https://newpizzaplace.com\",\n    \"cuisine_type\": \"Italian\",\n    \"price_range\": \"$$\",\n    \"business_hours\": {\n        \"monday\": {\"open\": \"09:00\", \"close\": \"22:00\"},\n        \"tuesday\": {\"open\": \"09:00\", \"close\": \"22:00\"},\n        \"wednesday\": {\"open\": \"09:00\", \"close\": \"22:00\"},\n        \"thursday\": {\"open\": \"09:00\", \"close\": \"22:00\"},\n        \"friday\": {\"open\": \"09:00\", \"close\": \"23:00\"},\n        \"saturday\": {\"open\": \"10:00\", \"close\": \"23:00\"},\n        \"sunday\": {\"open\": \"10:00\", \"close\": \"21:00\"}\n    },\n    \"settings\": {\n        \"accepts_online_orders\": true,\n        \"delivery_available\": true,\n        \"pickup_available\": true,\n        \"max_delivery_distance\": 15,\n        \"minimum_order_amount\": 25.00,\n        \"delivery_fee\": 3.99,\n        \"tax_rate\": 0.08,\n        \"service_fee\": 0.05\n    }\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/tenant/restaurants",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"tenant",
+								"restaurants"
+							]
+						},
+						"description": "Create a new restaurant"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Restaurant Details",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/tenant/restaurants/{{restaurant_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"tenant",
+								"restaurants",
+								"{{restaurant_id}}"
+							]
+						},
+						"description": "Get specific restaurant details"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Restaurant",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Updated Pizza Place\",\n    \"description\": \"Updated description for the restaurant\",\n    \"phone\": \"+1-555-999-8888\",\n    \"cuisine_type\": \"Italian-American\",\n    \"price_range\": \"$$$\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/tenant/restaurants/{{restaurant_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"tenant",
+								"restaurants",
+								"{{restaurant_id}}"
+							]
+						},
+						"description": "Update restaurant information"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Restaurant",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/tenant/restaurants/{{restaurant_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"tenant",
+								"restaurants",
+								"{{restaurant_id}}"
+							]
+						},
+						"description": "Delete a restaurant"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Restaurant Dashboard",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/tenant/restaurants/{{restaurant_id}}/dashboard",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"tenant",
+								"restaurants",
+								"{{restaurant_id}}",
+								"dashboard"
+							]
+						},
+						"description": "Get restaurant dashboard with statistics"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Restaurant Settings",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"accepts_online_orders\": true,\n    \"delivery_available\": true,\n    \"pickup_available\": true,\n    \"max_delivery_distance\": 20,\n    \"minimum_order_amount\": 30.00,\n    \"delivery_fee\": 4.99,\n    \"auto_accept_orders\": false\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/tenant/restaurants/{{restaurant_id}}/settings",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"tenant",
+								"restaurants",
+								"{{restaurant_id}}",
+								"settings"
+							]
+						},
+						"description": "Update restaurant settings"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Tenant Menu Management",
+			"auth": {
+				"type": "bearer",
+				"bearer": [
+					{
+						"key": "token",
+						"value": "{{tenant_token}}",
+						"type": "string"
+					}
+				]
+			},
+			"item": [
+				{
+					"name": "Menu Overview",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/tenant/restaurants/{{restaurant_id}}/menu/overview",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"tenant",
+								"restaurants",
+								"{{restaurant_id}}",
+								"menu",
+								"overview"
+							]
+						},
+						"description": "Get menu overview statistics"
+					},
+					"response": []
+				},
+				{
+					"name": "Menu Statistics",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/tenant/restaurants/{{restaurant_id}}/menu/stats",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"tenant",
+								"restaurants",
+								"{{restaurant_id}}",
+								"menu",
+								"stats"
+							]
+						},
+						"description": "Get detailed menu statistics"
+					},
+					"response": []
+				},
+				{
+					"name": "Popular Menu Items",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/tenant/restaurants/{{restaurant_id}}/menu/popular?limit=10",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"tenant",
+								"restaurants",
+								"{{restaurant_id}}",
+								"menu",
+								"popular"
+							],
+							"query": [
+								{
+									"key": "limit",
+									"value": "10"
+								}
+							]
+						},
+						"description": "Get popular menu items"
+					},
+					"response": []
+				},
+				{
+					"name": "Low Stock Items",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/tenant/restaurants/{{restaurant_id}}/menu/low-stock",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"tenant",
+								"restaurants",
+								"{{restaurant_id}}",
+								"menu",
+								"low-stock"
+							]
+						},
+						"description": "Get items with low stock"
+					},
+					"response": []
+				},
+				{
+					"name": "Bulk Update Availability",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"item_ids\": [1, 2, 3],\n    \"is_available\": false\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/tenant/restaurants/{{restaurant_id}}/menu/bulk-update-availability",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"tenant",
+								"restaurants",
+								"{{restaurant_id}}",
+								"menu",
+								"bulk-update-availability"
+							]
+						},
+						"description": "Bulk update item availability"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Items by Category",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/tenant/restaurants/{{restaurant_id}}/menu/items-by-category?category_id=1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"tenant",
+								"restaurants",
+								"{{restaurant_id}}",
+								"menu",
+								"items-by-category"
+							],
+							"query": [
+								{
+									"key": "category_id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "Get menu items grouped by category"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Menu Categories",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/tenant/restaurants/{{restaurant_id}}/menu/categories?is_active=true",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"tenant",
+								"restaurants",
+								"{{restaurant_id}}",
+								"menu",
+								"categories"
+							],
+							"query": [
+								{
+									"key": "is_active",
+									"value": "true"
+								}
+							]
+						},
+						"description": "Get all menu categories"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Menu Category",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Appetizers\",\n    \"description\": \"Start your meal with our delicious appetizers\",\n    \"image\": \"appetizers.jpg\",\n    \"sort_order\": 1,\n    \"is_active\": true,\n    \"settings\": {\n        \"display_style\": \"grid\",\n        \"show_description\": true\n    }\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/tenant/restaurants/{{restaurant_id}}/menu/categories",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"tenant",
+								"restaurants",
+								"{{restaurant_id}}",
+								"menu",
+								"categories"
+							]
+						},
+						"description": "Create a new menu category"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Menu Category",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/tenant/restaurants/{{restaurant_id}}/menu/categories/{{category_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"tenant",
+								"restaurants",
+								"{{restaurant_id}}",
+								"menu",
+								"categories",
+								"{{category_id}}"
+							]
+						},
+						"description": "Get specific menu category"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Menu Category",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Updated Appetizers\",\n    \"description\": \"Updated description\",\n    \"is_active\": true\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/tenant/restaurants/{{restaurant_id}}/menu/categories/{{category_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"tenant",
+								"restaurants",
+								"{{restaurant_id}}",
+								"menu",
+								"categories",
+								"{{category_id}}"
+							]
+						},
+						"description": "Update menu category"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Menu Category",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/tenant/restaurants/{{restaurant_id}}/menu/categories/{{category_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"tenant",
+								"restaurants",
+								"{{restaurant_id}}",
+								"menu",
+								"categories",
+								"{{category_id}}"
+							]
+						},
+						"description": "Delete menu category"
+					},
+					"response": []
+				},
+				{
+					"name": "Reorder Categories",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"categories\": [\n        {\"id\": 1, \"sort_order\": 1},\n        {\"id\": 2, \"sort_order\": 2},\n        {\"id\": 3, \"sort_order\": 3}\n    ]\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/tenant/restaurants/{{restaurant_id}}/menu/categories/reorder",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"tenant",
+								"restaurants",
+								"{{restaurant_id}}",
+								"menu",
+								"categories",
+								"reorder"
+							]
+						},
+						"description": "Reorder menu categories"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Menu Items",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/tenant/restaurants/{{restaurant_id}}/menu/items?category_id=1&is_available=true&is_featured=false&search=pizza",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"tenant",
+								"restaurants",
+								"{{restaurant_id}}",
+								"menu",
+								"items"
+							],
+							"query": [
+								{
+									"key": "category_id",
+									"value": "1"
+								},
+								{
+									"key": "is_available",
+									"value": "true"
+								},
+								{
+									"key": "is_featured",
+									"value": "false"
+								},
+								{
+									"key": "search",
+									"value": "pizza"
+								}
+							]
+						},
+						"description": "Get all menu items with filters"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Menu Item",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"menu_category_id\": 1,\n    \"name\": \"Margherita Pizza\",\n    \"description\": \"Classic pizza with tomato sauce, mozzarella, and fresh basil\",\n    \"price\": 12.99,\n    \"cost_price\": 5.50,\n    \"image\": \"margherita.jpg\",\n    \"images\": [\"margherita1.jpg\", \"margherita2.jpg\"],\n    \"is_available\": true,\n    \"is_featured\": false,\n    \"is_vegetarian\": true,\n    \"is_vegan\": false,\n    \"is_gluten_free\": false,\n    \"is_spicy\": false,\n    \"spice_level\": 0,\n    \"preparation_time\": 15,\n    \"calories\": 250,\n    \"allergens\": [\"gluten\", \"dairy\"],\n    \"ingredients\": [\"pizza dough\", \"tomato sauce\", \"mozzarella\", \"basil\"],\n    \"nutritional_info\": {\n        \"protein\": 12,\n        \"carbs\": 30,\n        \"fat\": 8\n    },\n    \"sort_order\": 1,\n    \"stock_quantity\": 50,\n    \"track_inventory\": true,\n    \"min_stock_level\": 10,\n    \"variants\": {\n        \"sizes\": [\n            {\"name\": \"Small\", \"price\": 9.99},\n            {\"name\": \"Large\", \"price\": 15.99}\n        ]\n    },\n    \"settings\": {\n        \"allow_customization\": true,\n        \"max_quantity\": 5\n    }\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/tenant/restaurants/{{restaurant_id}}/menu/items",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"tenant",
+								"restaurants",
+								"{{restaurant_id}}",
+								"menu",
+								"items"
+							]
+						},
+						"description": "Create a new menu item"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Menu Item",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/tenant/restaurants/{{restaurant_id}}/menu/items/{{item_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"tenant",
+								"restaurants",
+								"{{restaurant_id}}",
+								"menu",
+								"items",
+								"{{item_id}}"
+							]
+						},
+						"description": "Get specific menu item"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Menu Item",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Updated Margherita Pizza\",\n    \"price\": 13.99,\n    \"is_featured\": true\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/tenant/restaurants/{{restaurant_id}}/menu/items/{{item_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"tenant",
+								"restaurants",
+								"{{restaurant_id}}",
+								"menu",
+								"items",
+								"{{item_id}}"
+							]
+						},
+						"description": "Update menu item"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Menu Item",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/tenant/restaurants/{{restaurant_id}}/menu/items/{{item_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"tenant",
+								"restaurants",
+								"{{restaurant_id}}",
+								"menu",
+								"items",
+								"{{item_id}}"
+							]
+						},
+						"description": "Delete menu item"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Item Availability",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"is_available\": false\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/tenant/restaurants/{{restaurant_id}}/menu/items/{{item_id}}/availability",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"tenant",
+								"restaurants",
+								"{{restaurant_id}}",
+								"menu",
+								"items",
+								"{{item_id}}",
+								"availability"
+							]
+						},
+						"description": "Update item availability"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Item Stock",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"quantity\": 25\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/tenant/restaurants/{{restaurant_id}}/menu/items/{{item_id}}/stock",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"tenant",
+								"restaurants",
+								"{{restaurant_id}}",
+								"menu",
+								"items",
+								"{{item_id}}",
+								"stock"
+							]
+						},
+						"description": "Update item stock quantity"
+					},
+					"response": []
+				},
+				{
+					"name": "Reorder Menu Items",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"items\": [\n        {\"id\": 1, \"sort_order\": 1},\n        {\"id\": 2, \"sort_order\": 2},\n        {\"id\": 3, \"sort_order\": 3}\n    ]\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/tenant/restaurants/{{restaurant_id}}/menu/items/reorder",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"tenant",
+								"restaurants",
+								"{{restaurant_id}}",
+								"menu",
+								"items",
+								"reorder"
+							]
+						},
+						"description": "Reorder menu items"
+					},
+					"response": []
+				},
+				{
+					"name": "Bulk Update Menu Items",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"item_ids\": [1, 2, 3],\n    \"data\": {\n        \"is_featured\": true,\n        \"is_available\": true\n    }\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/tenant/restaurants/{{restaurant_id}}/menu/items/bulk-update",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"tenant",
+								"restaurants",
+								"{{restaurant_id}}",
+								"menu",
+								"items",
+								"bulk-update"
+							]
+						},
+						"description": "Bulk update menu items"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Tenant Order Management",
+			"auth": {
+				"type": "bearer",
+				"bearer": [
+					{
+						"key": "token",
+						"value": "{{tenant_token}}",
+						"type": "string"
+					}
+				]
+			},
+			"item": [
+				{
+					"name": "Get Orders",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/tenant/orders?status=pending&per_page=20",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"tenant",
+								"orders"
+							],
+							"query": [
+								{
+									"key": "status",
+									"value": "pending"
+								},
+								{
+									"key": "per_page",
+									"value": "20"
+								}
+							]
+						},
+						"description": "Get all orders"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Order",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"restaurant_id\": 1,\n    \"customer_id\": null,\n    \"items\": [\n        {\n            \"menu_item_id\": 1,\n            \"quantity\": 2,\n            \"price\": 12.99\n        }\n    ],\n    \"subtotal\": 25.98,\n    \"tax_amount\": 2.08,\n    \"delivery_fee\": 3.99,\n    \"total_amount\": 32.05,\n    \"payment_method\": \"credit_card\",\n    \"delivery_address\": \"123 Main St, City, State 12345\",\n    \"notes\": \"Extra cheese please\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/tenant/orders",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"tenant",
+								"orders"
+							]
+						},
+						"description": "Create a new order"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Order Status",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"status\": \"preparing\",\n    \"estimated_ready_time\": \"2024-01-15T19:30:00Z\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/tenant/orders/{{order_id}}/status",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"tenant",
+								"orders",
+								"{{order_id}}",
+								"status"
+							]
+						},
+						"description": "Update order status"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Order",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/tenant/orders/{{order_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"tenant",
+								"orders",
+								"{{order_id}}"
+							]
+						},
+						"description": "Get specific order details"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Order",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"status\": \"preparing\",\n    \"payment_status\": \"paid\",\n    \"notes\": \"Updated order notes\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/tenant/orders/{{order_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"tenant",
+								"orders",
+								"{{order_id}}"
+							]
+						},
+						"description": "Update order details"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Order",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/tenant/orders/{{order_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"tenant",
+								"orders",
+								"{{order_id}}"
+							]
+						},
+						"description": "Delete an order"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Payment Status",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"payment_status\": \"paid\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/tenant/orders/{{order_id}}/payment",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"tenant",
+								"orders",
+								"{{order_id}}",
+								"payment"
+							]
+						},
+						"description": "Update payment status"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Tenant Staff Management",
+			"auth": {
+				"type": "bearer",
+				"bearer": [
+					{
+						"key": "token",
+						"value": "{{tenant_token}}",
+						"type": "string"
+					}
+				]
+			},
+			"item": [
+				{
+					"name": "Get Staff Members",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/tenant/staff?role=staff&per_page=20",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"tenant",
+								"staff"
+							],
+							"query": [
+								{
+									"key": "role",
+									"value": "staff"
+								},
+								{
+									"key": "per_page",
+									"value": "20"
+								}
+							]
+						},
+						"description": "Get all staff members"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Staff Member",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"restaurant_id\": 1,\n    \"name\": \"New Staff Member\",\n    \"email\": \"staff@restaurant.com\",\n    \"password\": \"password123\",\n    \"role\": \"staff\",\n    \"phone\": \"+1-555-123-4567\",\n    \"permissions\": [\n        \"manage_orders\",\n        \"view_menu\",\n        \"manage_inventory\"\n    ]\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/tenant/staff",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"tenant",
+								"staff"
+							]
+						},
+						"description": "Create a new staff member"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Staff Permissions",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"permissions\": [\n        \"manage_orders\",\n        \"view_menu\",\n        \"manage_inventory\",\n        \"view_reports\"\n    ]\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/tenant/staff/{{user_id}}/permissions",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"tenant",
+								"staff",
+								"{{user_id}}",
+								"permissions"
+							]
+						},
+						"description": "Update staff member permissions"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Staff Member",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/tenant/staff/{{user_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"tenant",
+								"staff",
+								"{{user_id}}"
+							]
+						},
+						"description": "Get specific staff member details"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Staff Member",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Updated Staff Name\",\n    \"email\": \"updated@restaurant.com\",\n    \"phone\": \"+1-555-987-6543\",\n    \"role\": \"manager\",\n    \"status\": \"active\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/tenant/staff/{{user_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"tenant",
+								"staff",
+								"{{user_id}}"
+							]
+						},
+						"description": "Update staff member details"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Staff Member",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/tenant/staff/{{user_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"tenant",
+								"staff",
+								"{{user_id}}"
+							]
+						},
+						"description": "Delete a staff member"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Staff Role",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"role\": \"manager\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/tenant/staff/{{user_id}}/role",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"tenant",
+								"staff",
+								"{{user_id}}",
+								"role"
+							]
+						},
+						"description": "Update staff member role"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Staff Status",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"status\": \"inactive\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/tenant/staff/{{user_id}}/status",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"tenant",
+								"staff",
+								"{{user_id}}",
+								"status"
+							]
+						},
+						"description": "Update staff member status"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Tenant Analytics",
+			"auth": {
+				"type": "bearer",
+				"bearer": [
+					{
+						"key": "token",
+						"value": "{{tenant_token}}",
+						"type": "string"
+					}
+				]
+			},
+			"item": [
+				{
+					"name": "Get Analytics Overview",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/tenant/analytics/overview?period=30",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"tenant",
+								"analytics",
+								"overview"
+							],
+							"query": [
+								{
+									"key": "period",
+									"value": "30"
+								}
+							]
+						},
+						"description": "Get analytics overview"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Revenue Analytics",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/tenant/analytics/revenue?period=30",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"tenant",
+								"analytics",
+								"revenue"
+							],
+							"query": [
+								{
+									"key": "period",
+									"value": "30"
+								}
+							]
+						},
+						"description": "Get revenue analytics"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Order Analytics",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/tenant/analytics/orders?period=7",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"tenant",
+								"analytics",
+								"orders"
+							],
+							"query": [
+								{
+									"key": "period",
+									"value": "7"
+								}
+							]
+						},
+						"description": "Get order analytics"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Tenant Table Management",
+			"auth": {
+				"type": "bearer",
+				"bearer": [
+					{
+						"key": "token",
+						"value": "{{tenant_token}}",
+						"type": "string"
+					}
+				]
+			},
+			"item": [
+				{
+					"name": "Get Table Categories",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/tenant/restaurants/{{restaurant_id}}/tables/categories",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"tenant",
+								"restaurants",
+								"{{restaurant_id}}",
+								"tables",
+								"categories"
+							]
+						},
+						"description": "Get all table categories for a restaurant"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Table Category",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Rooftop Seating\",\n    \"description\": \"Premium rooftop dining with city views\",\n    \"floor\": \"Rooftop\",\n    \"section\": \"Outdoor\",\n    \"display_order\": 7,\n    \"is_active\": true,\n    \"color\": \"#FF6B6B\",\n    \"icon\": \"fas fa-mountain\",\n    \"settings\": {\n        \"max_capacity\": 30,\n        \"reservation_required\": true,\n        \"weather_dependent\": true,\n        \"premium_pricing\": true\n    }\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/tenant/restaurants/{{restaurant_id}}/tables/categories",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"tenant",
+								"restaurants",
+								"{{restaurant_id}}",
+								"tables",
+								"categories"
+							]
+						},
+						"description": "Create a new table category"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Table Category",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/tenant/restaurants/{{restaurant_id}}/tables/categories/{{category_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"tenant",
+								"restaurants",
+								"{{restaurant_id}}",
+								"tables",
+								"categories",
+								"{{category_id}}"
+							]
+						},
+						"description": "Get a specific table category with its tables"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Table Category",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Rooftop Premium\",\n    \"description\": \"Updated description for rooftop dining\",\n    \"color\": \"#FF8E53\",\n    \"settings\": {\n        \"max_capacity\": 35,\n        \"reservation_required\": true,\n        \"weather_dependent\": true,\n        \"premium_pricing\": true,\n        \"exclusive_service\": true\n    }\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/tenant/restaurants/{{restaurant_id}}/tables/categories/{{category_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"tenant",
+								"restaurants",
+								"{{restaurant_id}}",
+								"tables",
+								"categories",
+								"{{category_id}}"
+							]
+						},
+						"description": "Update a table category"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Table Category",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/tenant/restaurants/{{restaurant_id}}/tables/categories/{{category_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"tenant",
+								"restaurants",
+								"{{restaurant_id}}",
+								"tables",
+								"categories",
+								"{{category_id}}"
+							]
+						},
+						"description": "Delete a table category (only if no tables exist)"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Tables",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/tenant/restaurants/{{restaurant_id}}/tables?status=available&category_id=1&per_page=15",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"tenant",
+								"restaurants",
+								"{{restaurant_id}}",
+								"tables"
+							],
+							"query": [
+								{
+									"key": "status",
+									"value": "available"
+								},
+								{
+									"key": "category_id",
+									"value": "1"
+								},
+								{
+									"key": "per_page",
+									"value": "15"
+								}
+							]
+						},
+						"description": "Get all tables for a restaurant with filters"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Table",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"category_id\": 1,\n    \"name\": \"Table 7\",\n    \"number\": \"T007\",\n    \"floor\": \"Ground Floor\",\n    \"section\": \"Main Hall\",\n    \"capacity\": 4,\n    \"table_type\": \"Regular Table\",\n    \"status\": \"available\",\n    \"position_x\": 55.0,\n    \"position_y\": 15.2,\n    \"shape\": \"rectangle\",\n    \"notes\": \"New table near the window\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/tenant/restaurants/{{restaurant_id}}/tables",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"tenant",
+								"restaurants",
+								"{{restaurant_id}}",
+								"tables"
+							]
+						},
+						"description": "Create a new table"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Table",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/tenant/restaurants/{{restaurant_id}}/tables/{{table_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"tenant",
+								"restaurants",
+								"{{restaurant_id}}",
+								"tables",
+								"{{table_id}}"
+							]
+						},
+						"description": "Get a specific table with its details and orders"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Table",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Table 7 Premium\",\n    \"capacity\": 6,\n    \"table_type\": \"VIP Table\",\n    \"position_x\": 60.0,\n    \"notes\": \"Upgraded to premium table with better view\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/tenant/restaurants/{{restaurant_id}}/tables/{{table_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"tenant",
+								"restaurants",
+								"{{restaurant_id}}",
+								"tables",
+								"{{table_id}}"
+							]
+						},
+						"description": "Update a table"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Table",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/tenant/restaurants/{{restaurant_id}}/tables/{{table_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"tenant",
+								"restaurants",
+								"{{restaurant_id}}",
+								"tables",
+								"{{table_id}}"
+							]
+						},
+						"description": "Delete a table (only if no active orders)"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Table Status",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"status\": \"occupied\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/tenant/restaurants/{{restaurant_id}}/tables/{{table_id}}/status",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"tenant",
+								"restaurants",
+								"{{restaurant_id}}",
+								"tables",
+								"{{table_id}}",
+								"status"
+							]
+						},
+						"description": "Update table status (available, occupied, reserved, out_of_service, cleaning)"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Table Statistics",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/tenant/restaurants/{{restaurant_id}}/tables/stats/overview",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"tenant",
+								"restaurants",
+								"{{restaurant_id}}",
+								"tables",
+								"stats",
+								"overview"
+							]
+						},
+						"description": "Get table statistics and utilization rates"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Available Tables",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/tenant/restaurants/{{restaurant_id}}/tables/available?capacity=4&floor=Ground Floor",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"tenant",
+								"restaurants",
+								"{{restaurant_id}}",
+								"tables",
+								"available"
+							],
+							"query": [
+								{
+									"key": "capacity",
+									"value": "4"
+								},
+								{
+									"key": "floor",
+									"value": "Ground Floor"
+								}
+							]
+						},
+						"description": "Get available tables for a given capacity and filters"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Table Layout",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/tenant/restaurants/{{restaurant_id}}/tables/layout",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"tenant",
+								"restaurants",
+								"{{restaurant_id}}",
+								"tables",
+								"layout"
+							]
+						},
+						"description": "Get table layout/floor plan with positions"
+					},
+					"response": []
+				},
+				{
+					"name": "Bulk Update Table Status",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"table_ids\": [1, 2, 3],\n    \"status\": \"cleaning\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/tenant/restaurants/{{restaurant_id}}/tables/bulk-update-status",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"tenant",
+								"restaurants",
+								"{{restaurant_id}}",
+								"tables",
+								"bulk-update-status"
+							]
+						},
+						"description": "Bulk update status for multiple tables"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Tenant Settings",
+			"item": [
+				{
+					"name": "Get Settings",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/tenant/settings",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"tenant",
+								"settings"
+							]
+						},
+						"description": "Get tenant and restaurant settings"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Tenant Settings",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"settings\": {\n        \"timezone\": \"America/New_York\",\n        \"currency\": \"USD\",\n        \"language\": \"en\",\n        \"notifications\": {\n            \"email_orders\": true,\n            \"sms_orders\": false,\n            \"low_inventory_alerts\": true\n        }\n    }\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/tenant/settings/tenant",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"tenant",
+								"settings",
+								"tenant"
+							]
+						},
+						"description": "Update tenant settings"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Restaurant Settings",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"settings\": {\n        \"accepts_online_orders\": true,\n        \"delivery_available\": true,\n        \"pickup_available\": true,\n        \"max_delivery_distance\": 15,\n        \"minimum_order_amount\": 25.00,\n        \"delivery_fee\": 3.99,\n        \"auto_accept_orders\": false\n    }\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/tenant/settings/restaurant",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"tenant",
+								"settings",
+								"restaurant"
+							]
+						},
+						"description": "Update restaurant settings"
+					},
+					"response": []
+				},
+				{
+					"name": "Update User Profile",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Updated Name\",\n    \"phone\": \"+1-555-999-8888\",\n    \"avatar\": \"https://example.com/avatar.jpg\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/tenant/settings/profile",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"tenant",
+								"settings",
+								"profile"
+							]
+						},
+						"description": "Update user profile"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Tenant Subscription",
+			"item": [
+				{
+					"name": "Get Subscription Info",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/tenant/subscription",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"tenant",
+								"subscription"
+							]
+						},
+						"description": "Get subscription information"
+					},
+					"response": []
+				},
+				{
+					"name": "Upgrade Subscription",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"plan\": \"enterprise\",\n    \"payment_method\": \"credit_card\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/tenant/subscription/upgrade",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"tenant",
+								"subscription",
+								"upgrade"
+							]
+						},
+						"description": "Upgrade subscription plan"
+					},
+					"response": []
+				},
+				{
+					"name": "Cancel Subscription",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/tenant/subscription/cancel",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"tenant",
+								"subscription",
+								"cancel"
+							]
+						},
+						"description": "Cancel subscription"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Mobile API Authentication",
+			"auth": {
+				"type": "bearer",
+				"bearer": [
+					{
+						"key": "token",
+						"value": "{{api_token}}",
+						"type": "string"
+					}
+				]
+			},
+			"item": [
+				{
+					"name": "Mobile Register",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"John Mobile User\",\n    \"email\": \"john@mobileapp.com\",\n    \"password\": \"password123\",\n    \"password_confirmation\": \"password123\",\n    \"phone\": \"+1-555-123-4567\",\n    \"restaurant_name\": \"Mobile Pizza Place\",\n    \"restaurant_description\": \"Great pizza for mobile orders\",\n    \"restaurant_address\": \"789 Mobile Street\",\n    \"restaurant_city\": \"San Francisco\",\n    \"restaurant_state\": \"CA\",\n    \"restaurant_zip\": \"94102\",\n    \"restaurant_country\": \"US\",\n    \"restaurant_phone\": \"+1-555-987-6543\",\n    \"restaurant_website\": \"https://mobilepizza.com\",\n    \"cuisine_type\": \"Italian\",\n    \"price_range\": \"$$\",\n    \"delivery_available\": true,\n    \"max_delivery_distance\": 10,\n    \"subscription_plan\": \"professional\",\n    \"device_id\": \"ABC123XYZ\",\n    \"device_type\": \"ios\",\n    \"app_version\": \"1.0.0\",\n    \"terms_accepted\": true,\n    \"privacy_accepted\": true\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/mobile/auth/register",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"mobile",
+								"auth",
+								"register"
+							]
+						},
+						"description": "Register new user via mobile app"
+					},
+					"response": []
+				},
+				{
+					"name": "Mobile Login",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"{{tenant_owner_email}}\",\n    \"password\": \"{{tenant_owner_password}}\",\n    \"device_id\": \"{{mobile_device_id}}\",\n    \"device_type\": \"{{mobile_device_type}}\",\n    \"app_version\": \"{{mobile_app_version}}\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/mobile/auth/login",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"mobile",
+								"auth",
+								"login"
+							]
+						},
+						"description": "Login via mobile app"
+					},
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"// Set api_token from login response",
+									"console.log('Response status:', pm.response.code);",
+									"console.log('Response body:', pm.response.text());",
+									"",
+									"if (pm.response.code === 200) {",
+									"    try {",
+									"        const response = pm.response.json();",
+									"        console.log('Parsed response:', response);",
+									"        ",
+									"        if (response.data && response.data.access_token) {",
+									"            pm.environment.set('api_token', response.data.access_token);",
+									"            pm.environment.set('access_token', response.data.access_token);",
+									"            console.log('API token set successfully:', response.data.access_token);",
+									"            ",
+									"            // Test the token",
+									"            pm.test('API token is set', function () {",
+									"                pm.expect(pm.environment.get('api_token')).to.not.be.empty;",
+									"            });",
+									"        } else {",
+									"            console.log('No access_token found in response');",
+									"        }",
+									"    } catch (e) {",
+									"        console.log('Error parsing response:', e);",
+									"    }",
+									"} else {",
+									"    console.log('Login failed with status:', pm.response.code);",
+									"    console.log('Error response:', pm.response.text());",
+									"}"
+								]
+							}
+						}
+					],
+					"response": []
+				},
+				{
+					"name": "Mobile Logout",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/mobile/auth/logout",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"mobile",
+								"auth",
+								"logout"
+							]
+						},
+						"description": "Logout from mobile app"
+					},
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"// Clear API tokens on logout",
+									"if (pm.response.code === 200) {",
+									"    pm.environment.set('api_token', '');",
+									"    pm.environment.set('access_token', '');",
+									"    console.log('API tokens cleared successfully');",
+									"    ",
+									"    pm.test('API tokens are cleared', function () {",
+									"        pm.expect(pm.environment.get('api_token')).to.be.empty;",
+									"    });",
+									"} else {",
+									"    console.log('Logout failed with status:', pm.response.code);",
+									"}"
+								]
+							}
+						}
+					],
+					"response": []
+				},
+				{
+					"name": "Get Mobile Profile",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/mobile/profile",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"mobile",
+								"profile"
+							]
+						},
+						"description": "Get mobile user profile"
+					},
+					"response": []
+				},
+				{
+					"name": "Refresh Mobile Token",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/mobile/auth/refresh",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"mobile",
+								"auth",
+								"refresh"
+							]
+						},
+						"description": "Refresh mobile authentication token"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Mobile Restaurant Management",
+			"auth": {
+				"type": "bearer",
+				"bearer": [
+					{
+						"key": "token",
+						"value": "{{api_token}}",
+						"type": "string"
+					}
+				]
+			},
+			"item": [
+				{
+					"name": "Get Mobile Restaurants",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/mobile/restaurant?per_page=20&status=active",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"mobile",
+								"restaurant"
+							],
+							"query": [
+								{
+									"key": "per_page",
+									"value": "20"
+								},
+								{
+									"key": "status",
+									"value": "active"
+								}
+							]
+						},
+						"description": "Get restaurants optimized for mobile"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Mobile Restaurant Details",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/mobile/restaurant/{{restaurant_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"mobile",
+								"restaurant",
+								"{{restaurant_id}}"
+							]
+						},
+						"description": "Get restaurant details optimized for mobile"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Mobile Restaurant Dashboard",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/mobile/restaurant/{{restaurant_id}}/dashboard",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"mobile",
+								"restaurant",
+								"{{restaurant_id}}",
+								"dashboard"
+							]
+						},
+						"description": "Get mobile-optimized restaurant dashboard"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Mobile Restaurant Settings",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"accepts_online_orders\": true,\n    \"delivery_available\": true,\n    \"pickup_available\": true,\n    \"max_delivery_distance\": 15,\n    \"minimum_order_amount\": 20.00,\n    \"delivery_fee\": 2.99,\n    \"auto_accept_orders\": true\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/mobile/restaurant/{{restaurant_id}}/settings",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"mobile",
+								"restaurant",
+								"{{restaurant_id}}",
+								"settings"
+							]
+						},
+						"description": "Update restaurant settings via mobile"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Restaurant Business Hours",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/mobile/restaurant/{{restaurant_id}}/business-hours",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"mobile",
+								"restaurant",
+								"{{restaurant_id}}",
+								"business-hours"
+							]
+						},
+						"description": "Get restaurant business hours and status"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "System Management",
+			"auth": {
+				"type": "bearer",
+				"bearer": [
+					{
+						"key": "token",
+						"value": "{{admin_token}}",
+						"type": "string"
+					}
+				]
+			},
+			"item": [
+				{
+					"name": "Get System Health",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/admin/system/health",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"admin",
+								"system",
+								"health"
+							]
+						},
+						"description": "Get system health status"
+					},
+					"response": []
+				},
+				{
+					"name": "Get System Statistics",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/admin/system/stats",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"admin",
+								"system",
+								"stats"
+							]
+						},
+						"description": "Get system statistics"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Analytics",
+			"item": [
+				{
+					"name": "Get Analytics Overview",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/admin/analytics/overview",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"admin",
+								"analytics",
+								"overview"
+							]
+						},
+						"description": "Get analytics overview for admin"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Revenue Analytics",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/admin/analytics/revenue",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"admin",
+								"analytics",
+								"revenue"
+							]
+						},
+						"description": "Get revenue analytics"
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}
