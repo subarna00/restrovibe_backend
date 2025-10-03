@@ -1,17 +1,27 @@
 {
-    "$schema": "https://json.schemastore.org/package.json",
-    "private": true,
-    "type": "module",
-    "scripts": {
-        "build": "vite build",
-        "dev": "vite"
-    },
-    "devDependencies": {
-        "@tailwindcss/vite": "^4.0.0",
-        "axios": "^1.11.0",
-        "concurrently": "^9.0.1",
-        "laravel-vite-plugin": "^2.0.0",
-        "tailwindcss": "^4.0.0",
-        "vite": "^7.0.4"
-    }
+  "name": "restrovibe-monorepo",
+  "version": "1.0.0",
+  "description": "RestroVibe Restaurant Management System - Full Stack Monorepo",
+  "private": true,
+  "scripts": {
+    "dev:backend": "php artisan serve --host=0.0.0.0 --port=8000",
+    "dev:frontend": "cd frontend && pnpm dev",
+    "build:frontend": "cd frontend && pnpm build",
+    "start:frontend": "cd frontend && pnpm start",
+    "install:all": "composer install && cd frontend && pnpm install",
+    "migrate": "php artisan migrate",
+    "seed": "php artisan db:seed",
+    "fresh": "php artisan migrate:fresh --seed",
+    "test:backend": "php artisan test",
+    "test:frontend": "cd frontend && pnpm test",
+    "lint:frontend": "cd frontend && pnpm lint",
+    "type-check": "cd frontend && pnpm type-check"
+  },
+  "workspaces": [
+    "frontend"
+  ],
+  "engines": {
+    "node": ">=18.0.0",
+    "php": ">=8.2"
+  }
 }

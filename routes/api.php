@@ -49,6 +49,30 @@ Route::prefix('auth')->group(function () {
     Route::post('/register', [RegisterController::class, 'store']);
     Route::post('/login', [LoginController::class, 'store']);
     Route::post('/logout', [LoginController::class, 'destroy'])->middleware('auth.api');
+    
+    // Email verification routes
+    Route::get('/email/verify', function () {
+        return response()->json(['message' => 'Email verification required'], 403);
+    })->name('verification.notice');
+    
+    Route::get('/email/verify/{id}/{hash}', function (Request $request) {
+        $user = \App\Models\User::find($request->route('id'));
+        if (!$user || !hash_equals((string) $request->route('hash'), sha1($user->getEmailForVerification()))) {
+            return response()->json(['message' => 'Invalid verification link'], 400);
+        }
+        
+        if ($user->hasVerifiedEmail()) {
+            return response()->json(['message' => 'Email already verified'], 200);
+        }
+        
+        $user->markEmailAsVerified();
+        return response()->json(['message' => 'Email verified successfully'], 200);
+    })->name('verification.verify');
+    
+    Route::post('/email/verification-notification', function (Request $request) {
+        $request->user()->sendEmailVerificationNotification();
+        return response()->json(['message' => 'Verification email sent'], 200);
+    })->middleware(['auth.api', 'throttle:6,1'])->name('verification.send');
 });
 
 Route::middleware('auth.api')->group(function () {

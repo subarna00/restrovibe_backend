@@ -12,7 +12,13 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('orders', function (Blueprint $table) {
-            $table->foreignId('table_id')->nullable()->constrained('tables')->onDelete('set null');
+            // Add foreign key constraint if it doesn't exist
+            if (!Schema::hasColumn('orders', 'table_id')) {
+                $table->foreignId('table_id')->nullable()->constrained('tables')->onDelete('set null');
+            } else {
+                // Column exists, just add the foreign key constraint
+                $table->foreign('table_id')->references('id')->on('tables')->onDelete('set null');
+            }
             $table->index(['restaurant_id', 'table_id']);
         });
     }

@@ -75,47 +75,38 @@ class TableSeeder extends Seeder
 
     private function getGroundFloorTables(TableCategory $category): array
     {
-        return [
-            [
-                'name' => 'Table 1',
-                'number' => 'T001',
+        $tables = [];
+        $tableTypes = ['Regular Table', 'Booth', 'Window Table', 'Corner Table'];
+        $shapes = ['rectangle', 'circle', 'oval', 'square'];
+        $statuses = ['available', 'occupied', 'reserved', 'cleaning'];
+        
+        for ($i = 1; $i <= 12; $i++) {
+            $capacity = rand(1, 2) === 1 ? 2 : 4; // 50% chance of 2 or 4 seats
+            $status = $statuses[array_rand($statuses)];
+            $tableType = $tableTypes[array_rand($tableTypes)];
+            $shape = $shapes[array_rand($shapes)];
+            
+            $tables[] = [
+                'name' => "Table {$i}",
+                'number' => 'T' . str_pad($i, 3, '0', STR_PAD_LEFT),
                 'floor' => $category->floor,
                 'section' => $category->section,
-                'capacity' => 2,
-                'table_type' => 'Regular Table',
-                'status' => 'available',
-                'position_x' => 10.5,
-                'position_y' => 15.2,
-                'shape' => 'rectangle',
-                'notes' => 'Window table with city view',
-            ],
-            [
-                'name' => 'Table 2',
-                'number' => 'T002',
-                'floor' => $category->floor,
-                'section' => $category->section,
-                'capacity' => 4,
-                'table_type' => 'Regular Table',
-                'status' => 'available',
-                'position_x' => 25.0,
-                'position_y' => 15.2,
-                'shape' => 'rectangle',
-                'notes' => 'Center table',
-            ],
-            [
-                'name' => 'Table 3',
-                'number' => 'T003',
-                'floor' => $category->floor,
-                'section' => $category->section,
-                'capacity' => 4,
-                'table_type' => 'Regular Table',
-                'status' => 'occupied',
-                'position_x' => 40.0,
-                'position_y' => 15.2,
-                'shape' => 'rectangle',
-                'notes' => 'Near entrance',
-            ],
-        ];
+                'capacity' => $capacity,
+                'table_type' => $tableType,
+                'status' => $status,
+                'position_x' => rand(5, 95),
+                'position_y' => rand(5, 95),
+                'shape' => $shape,
+                'notes' => $this->getRandomTableNotes($tableType, $i),
+                'settings' => [
+                    'has_power_outlet' => rand(1, 10) <= 6,
+                    'has_wifi' => true,
+                    'wheelchair_accessible' => rand(1, 10) <= 8,
+                ],
+            ];
+        }
+        
+        return $tables;
     }
 
     private function getPrivateCabinTables(TableCategory $category): array
@@ -243,5 +234,45 @@ class TableSeeder extends Seeder
                 'notes' => 'Default table',
             ],
         ];
+    }
+
+    /**
+     * Get random table notes based on table type
+     */
+    private function getRandomTableNotes(string $tableType, int $tableNumber): ?string
+    {
+        $notes = [
+            'Window table with city view',
+            'Near entrance',
+            'Center table',
+            'Quiet corner',
+            'Near restroom',
+            'High traffic area',
+            'Power outlet available',
+            'Wheelchair accessible',
+            'Good for groups',
+            'Intimate setting',
+            'Near kitchen',
+            'Garden view',
+            'Street view',
+            'Private area',
+            'Main dining area',
+        ];
+
+        // Add type-specific notes
+        $typeNotes = [
+            'Regular Table' => ['Standard seating', 'Comfortable chairs'],
+            'Booth' => ['U-shaped seating', 'High back', 'Privacy'],
+            'Window Table' => ['Natural light', 'City view', 'Garden view'],
+            'Corner Table' => ['Quiet location', 'Private feel'],
+            'Bar Table' => ['Bar height', 'Stool seating'],
+            'Family Table' => ['Large capacity', 'High chairs available'],
+            'VIP Table' => ['Premium location', 'Exclusive service'],
+            'Outdoor Table' => ['Weather dependent', 'Garden setting'],
+        ];
+
+        $allNotes = array_merge($notes, $typeNotes[$tableType] ?? []);
+        
+        return rand(1, 10) <= 7 ? $allNotes[array_rand($allNotes)] : null;
     }
 }

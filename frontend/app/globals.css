@@ -1,0 +1,399 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  /* Professional RestroVibe Brand Colors - Crimson Theme */
+  --background: "white"; /* Warm off-white with subtle cream undertone */
+  --foreground: oklch(0.12 0.015 240); /* Deep charcoal for better readability */
+  --card: oklch(1 0 0); /* Pure white cards for clean contrast */
+  --card-foreground: oklch(0.12 0.015 240);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.12 0.015 240);
+
+  /* Enhanced Primary Colors - Professional Crimson Palette */
+  --primary: oklch(0.45 0.25 15); /* Rich crimson #DC143C */
+  --primary-foreground: oklch(0.98 0.005 15);
+  --primary-light: oklch(0.65 0.2 15); /* Lighter crimson for hover states */
+  --primary-dark: oklch(0.35 0.3 15); /* Darker crimson for active states */
+  --primary-subtle: oklch(0.95 0.05 15); /* Very light crimson for backgrounds */
+
+  /* Refined Secondary Colors */
+  --secondary: oklch(0.96 0.008 240); /* Cool light gray */
+  --secondary-foreground: oklch(0.25 0.015 240);
+  --muted: oklch(0.96 0.008 240);
+  --muted-foreground: oklch(0.45 0.01 240); /* Better contrast for muted text */
+  --accent: oklch(0.94 0.01 60); /* Warm accent matching background tone */
+  --accent-foreground: oklch(0.25 0.015 240);
+
+  /* Professional Status Colors */
+  --success: oklch(0.55 0.15 140); /* Professional green */
+  --success-foreground: oklch(0.98 0.005 140);
+  --warning: oklch(0.75 0.15 80); /* Warm amber */
+  --warning-foreground: oklch(0.15 0.02 80);
+  --destructive: oklch(0.55 0.2 25); /* Refined red */
+  --destructive-foreground: oklch(0.98 0.005 25);
+
+  /* Enhanced UI Elements */
+  --border: oklch(0.9 0.005 240); /* Subtle borders */
+  --input: oklch(0.98 0.005 240); /* Light input backgrounds */
+  --ring: oklch(0.45 0.25 15); /* Primary focus ring */
+
+  /* Professional Chart Colors - Harmonious Palette */
+  --chart-1: oklch(0.45 0.25 15); /* Primary crimson */
+  --chart-2: oklch(0.55 0.15 140); /* Success green */
+  --chart-3: oklch(0.65 0.2 260); /* Professional blue */
+  --chart-4: oklch(0.75 0.15 80); /* Warm amber */
+  --chart-5: oklch(0.55 0.12 300); /* Purple accent */
+  --chart-6: oklch(0.65 0.18 180); /* Teal accent */
+
+  --radius: 0.75rem;
+
+  /* Enhanced Sidebar Colors */
+  --sidebar: oklch(0.99 0.005 60); /* Slightly warmer than background */
+  --sidebar-foreground: oklch(0.15 0.015 240);
+  --sidebar-primary: oklch(0.45 0.25 15);
+  --sidebar-primary-foreground: oklch(0.98 0.005 15);
+  --sidebar-accent: oklch(0.96 0.008 60); /* Subtle hover state */
+  --sidebar-accent-foreground: oklch(0.15 0.015 240);
+  --sidebar-border: oklch(0.92 0.005 240);
+  --sidebar-ring: oklch(0.45 0.25 15);
+}
+
+.dark {
+  /* Professional Dark Theme */
+  --background: oklch(0.08 0.01 240); /* Deep dark blue-gray */
+  --foreground: oklch(0.95 0.005 60); /* Warm white */
+  --card: oklch(0.12 0.01 240); /* Elevated dark cards */
+  --card-foreground: oklch(0.95 0.005 60);
+  --popover: oklch(0.12 0.01 240);
+  --popover-foreground: oklch(0.95 0.005 60);
+
+  /* Dark Theme Primary Colors */
+  --primary: oklch(0.6 0.22 15); /* Brighter crimson for dark mode */
+  --primary-foreground: oklch(0.05 0.01 15);
+  --primary-light: oklch(0.7 0.18 15);
+  --primary-dark: oklch(0.5 0.25 15);
+  --primary-subtle: oklch(0.15 0.08 15);
+
+  /* Dark Theme Secondary Colors */
+  --secondary: oklch(0.16 0.01 240);
+  --secondary-foreground: oklch(0.9 0.005 60);
+  --muted: oklch(0.16 0.01 240);
+  --muted-foreground: oklch(0.65 0.005 240);
+  --accent: oklch(0.2 0.01 240);
+  --accent-foreground: oklch(0.9 0.005 60);
+
+  /* Dark Theme Status Colors */
+  --success: oklch(0.65 0.15 140);
+  --success-foreground: oklch(0.05 0.01 140);
+  --warning: oklch(0.8 0.15 80);
+  --warning-foreground: oklch(0.05 0.01 80);
+  --destructive: oklch(0.65 0.2 25);
+  --destructive-foreground: oklch(0.95 0.005 25);
+
+  /* Dark Theme UI Elements */
+  --border: oklch(0.2 0.01 240);
+  --input: oklch(0.16 0.01 240);
+  --ring: oklch(0.6 0.22 15);
+
+  /* Dark Theme Chart Colors */
+  --chart-1: oklch(0.6 0.22 15);
+  --chart-2: oklch(0.65 0.15 140);
+  --chart-3: oklch(0.7 0.18 260);
+  --chart-4: oklch(0.8 0.15 80);
+  --chart-5: oklch(0.65 0.12 300);
+  --chart-6: oklch(0.7 0.16 180);
+
+  /* Dark Theme Sidebar */
+  --sidebar: oklch(0.1 0.01 240);
+  --sidebar-foreground: oklch(0.85 0.005 60);
+  --sidebar-primary: oklch(0.6 0.22 15);
+  --sidebar-primary-foreground: oklch(0.05 0.01 15);
+  --sidebar-accent: oklch(0.14 0.01 240);
+  --sidebar-accent-foreground: oklch(0.85 0.005 60);
+  --sidebar-border: oklch(0.2 0.01 240);
+  --sidebar-ring: oklch(0.6 0.22 15);
+}
+
+@theme inline {
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary-light: var(--primary-light);
+  --color-primary-dark: var(--primary-dark);
+  --color-primary-subtle: var(--primary-subtle);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-chart-6: var(--chart-6);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground font-sans;
+    /* Enhanced typography with better line height and letter spacing */
+    line-height: 1.6;
+    letter-spacing: -0.01em;
+  }
+
+  /* Enhanced heading typography */
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply text-balance;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+  }
+
+  /* Better paragraph spacing */
+  p {
+    @apply text-pretty;
+  }
+}
+
+/* Enhanced custom scrollbar with primary color theme */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: oklch(0.96 0.005 240);
+}
+
+::-webkit-scrollbar-thumb {
+  background: oklch(0.45 0.25 15 / 0.3);
+  border-radius: 4px;
+  border: 1px solid oklch(0.96 0.005 240);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: oklch(0.45 0.25 15 / 0.5);
+}
+
+.dark ::-webkit-scrollbar-track {
+  background: oklch(0.16 0.01 240);
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: oklch(0.6 0.22 15 / 0.4);
+  border-color: oklch(0.16 0.01 240);
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: oklch(0.6 0.22 15 / 0.6);
+}
+
+/* Enhanced animations and transitions */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-slide-in {
+  animation: slideIn 0.3s ease-out;
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.4s ease-out;
+}
+
+.animate-scale-in {
+  animation: scaleIn 0.2s ease-out;
+}
+
+/* Professional card shadows and elevation */
+.card-elevated {
+  box-shadow: 0 1px 3px oklch(0.45 0.25 15 / 0.05), 0 1px 2px oklch(0.45 0.25 15 / 0.1);
+}
+
+.card-elevated:hover {
+  box-shadow: 0 4px 6px oklch(0.45 0.25 15 / 0.07), 0 2px 4px oklch(0.45 0.25 15 / 0.06);
+  transition: box-shadow 0.2s ease-out;
+}
+
+/* Enhanced focus states */
+.focus-ring {
+  @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background;
+}
+
+/* Professional gradient backgrounds for special elements */
+.gradient-primary {
+  background: linear-gradient(135deg, oklch(0.45 0.25 15) 0%, oklch(0.55 0.22 20) 100%);
+}
+
+.gradient-subtle {
+  background: linear-gradient(135deg, oklch(0.98 0.008 60) 0%, oklch(0.96 0.01 80) 100%);
+}
+
+.dark .gradient-subtle {
+  background: linear-gradient(135deg, oklch(0.08 0.01 240) 0%, oklch(0.1 0.012 260) 100%);
+}
+
+/* Custom animations for the new home page */
+@keyframes floating {
+  0%, 100% { 
+    transform: translateY(0px); 
+  }
+  50% { 
+    transform: translateY(-8px); 
+  }
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-floating {
+  animation: floating 6s ease-in-out infinite;
+}
+
+/* Scroll-triggered animations */
+.fade-up {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.8s ease-out;
+}
+
+.fade-up.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.fade-up-delay-1 {
+  transition-delay: 0.2s;
+}
+
+.fade-up-delay-2 {
+  transition-delay: 0.4s;
+}
+
+.fade-up-delay-3 {
+  transition-delay: 0.6s;
+}
+
+.fade-up-delay-4 {
+  transition-delay: 0.8s;
+}
+
+.hover-scale {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hover-scale:hover {
+  transform: translateY(-8px) scale(1.02);
+}
+
+.gradient-bg {
+  background: linear-gradient(135deg, #dc2626 0%, #1d4ed8 100%);
+}
+
+.gradient-text {
+  background: linear-gradient(135deg, #dc2626 0%, #1d4ed8 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.glass-effect {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.professional-shadow {
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+.pulse-red {
+  animation: pulse-red 2s infinite;
+}
+
+@keyframes pulse-red {
+  0%, 100% { 
+    box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.7); 
+  }
+  70% { 
+    box-shadow: 0 0 0 10px rgba(220, 38, 38, 0); 
+  }
+}

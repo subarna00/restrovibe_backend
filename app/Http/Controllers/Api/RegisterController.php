@@ -38,8 +38,8 @@ class RegisterController extends Controller
         // Create user (restaurant owner)
         $user = $this->createUser($request, $tenant, $restaurant);
 
-        // Send email verification
-        event(new Registered($user));
+        // Send email verification (temporarily disabled for testing)
+        // event(new Registered($user));
 
         // Log the user in
         Auth::login($user);
