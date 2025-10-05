@@ -52,11 +52,7 @@ jobs:
             
             # Optimize application
             php artisan optimize
-            
-            # Set correct permissions (run as user, not sudo)
-            chown -R www-data:www-data storage bootstrap/cache
-            chmod -R 775 storage bootstrap/cache
-            
+
             # Restart PHP-FPM gracefully
             sudo systemctl reload php8.3-fpm
             
