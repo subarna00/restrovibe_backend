@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main        # Production
+      - staging     # Staging environment
 
 jobs:
   deploy:
@@ -16,15 +17,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
       
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: '8.3'
-          extensions: mbstring, xml, curl, mysql
-      
-      - name: Install dependencies
-        run: composer install --prefer-dist --no-progress
-      
       - name: Deploy to EC2
         uses: appleboy/ssh-action@master
         with:
@@ -34,6 +26,9 @@ jobs:
           port: ${{ secrets.EC2_PORT }}
           script: |
             cd /var/www/html/restrovibe_backend
+            
+            # Fix git ownership warning
+            git config --global --add safe.directory /var/www/html/restrovibe_backend
             
             # Pull latest code
             git pull origin main
