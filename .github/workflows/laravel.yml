@@ -30,23 +30,35 @@ jobs:
             # Fix git ownership warning
             git config --global --add safe.directory /var/www/html/restrovibe_backend
             
-            # Pull latest code
-            git pull origin main
+            # Pull latest code (use correct branch)
+            git pull origin ${{ github.ref_name }}
             
-            # Install/update dependencies
-            composer install --no-dev --optimize-autoloader
+            # Install/update dependencies (no interaction)
+            composer install --no-dev --optimize-autoloader --no-interaction
             
-            # Run migrations
-            php artisan migrate
+            # Clear old cache BEFORE running migrations
+            php artisan config:clear
+            php artisan route:clear
+            php artisan view:clear
+            php artisan cache:clear
             
-            # Clear and cache config
+            # Run migrations (with force flag for production)
+            php artisan migrate --force
+            
+            # Rebuild cache
             php artisan config:cache
             php artisan route:cache
             php artisan view:cache
             
-            # Set permissions
-            sudo chown -R www-data:www-data storage bootstrap/cache
-            sudo chmod -R 775 storage bootstrap/cache
+            # Optimize application
+            php artisan optimize
             
-            # Restart PHP-FPM (optional but recommended)
-            sudo systemctl restart php8.3-fpm
+            # Set correct permissions (run as user, not sudo)
+            chown -R www-data:www-data storage bootstrap/cache
+            chmod -R 775 storage bootstrap/cache
+            
+            # Restart PHP-FPM gracefully
+            sudo systemctl reload php8.3-fpm
+            
+            # Clear OPcache (if enabled)
+            php artisan optimize:clear
